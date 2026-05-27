@@ -16,6 +16,9 @@
 - [x] **M6 — Single mode UI** (url-input → preview-card → progress-card)
 - [x] **M7 — Batch + History + Settings** (4 telas completas, microcopy locked)
 - [x] **M8 — Validation** (build verde, 27 unit tests, 7 Playwright e2e, 4 screenshots)
+- [x] **Polish 1 — Identidade + monogram** (SVG monogram, favicon SVG, titles dinâmicos por rota, monogram sutil no empty state)
+- [x] **Polish 2 — Motion polish** (page transitions, layout transition no Single mode, shimmer na progress bar, hover lift no botão primário, sidebar active com `layoutId`, toggle com spring physics)
+- [x] **Polish 3 — Detalhes premium** (input glow halo, `:focus-visible`, tooltips custom, atalhos globais ⌘1-4 + ⌘K + ?, skeleton states no histórico, scrollbar custom)
 
 ---
 
@@ -116,10 +119,11 @@ Servidor dev levantado em `http://localhost:3000`, naveguei pelas 4 rotas, captu
 
 ### Screenshots
 
-- `validation/single.png` — rota `/` (Cole um link do TikTok, input mono, ⌘V kbd, focus ring roxo)
-- `validation/batch.png` — rota `/batch` (Cole as URLs, textarea, contador "0 URLs detectadas", botão "Iniciar fila")
-- `validation/history.png` — rota `/history` (empty state com ícone Inbox + "Nenhum download ainda" + CTA secundário "Ir pra Single mode")
-- `validation/settings.png` — rota `/settings` (Pasta de destino, Processamento com 2 toggles, Engine de download com Verificar atualização, Logs com toggle)
+- `validation/single.png` — rota `/` (Cole um link do TikTok, input mono com glow halo roxo no focus, ⌘V kbd, monogram no topo da sidebar)
+- `validation/batch.png` — rota `/batch` (Cole as URLs, textarea com glow no focus, contador, botão com hover lift)
+- `validation/history.png` — rota `/history` (mostra item real baixado pelo usuário, com monogram sutil opacity 4% atrás do empty state quando vazio)
+- `validation/settings.png` — rota `/settings` (toggles com spring physics, stagger fade-in das 4 seções no mount)
+- `validation/shortcuts.png` — modal de atalhos (⌘1-4 navegação, ⌘K foco no input, ? abre/fecha o modal — abre via tecla `?` ou clique no ícone ⌘ no rodapé da sidebar)
 
 ### Snapshots
 

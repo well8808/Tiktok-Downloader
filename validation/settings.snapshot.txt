@@ -1,57 +1,61 @@
 - generic [active] [ref=e1]:
   - generic [ref=e2]:
     - navigation [ref=e3]:
-      - list [ref=e4]:
-        - listitem [ref=e5]:
-          - link "Single" [ref=e6] [cursor=pointer]:
+      - img "TikTok Downloader" [ref=e5]
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Single" [ref=e11] [cursor=pointer]:
             - /url: /
-            - img [ref=e7]
-        - listitem [ref=e10]:
-          - link "Batch" [ref=e11] [cursor=pointer]:
-            - /url: /batch
             - img [ref=e12]
-        - listitem [ref=e16]:
-          - link "Histórico" [ref=e17] [cursor=pointer]:
-            - /url: /history
+        - listitem [ref=e15]:
+          - link "Batch" [ref=e17] [cursor=pointer]:
+            - /url: /batch
             - img [ref=e18]
-      - link "Configurações" [ref=e22] [cursor=pointer]:
+        - listitem [ref=e22]:
+          - link "Histórico" [ref=e24] [cursor=pointer]:
+            - /url: /history
+            - img [ref=e25]
+      - button "Mostrar atalhos" [ref=e30] [cursor=pointer]:
+        - img [ref=e31]
+      - link "Configurações" [ref=e34] [cursor=pointer]:
         - /url: /settings
-        - img [ref=e23]
-    - main [ref=e26]:
-      - generic [ref=e27]:
-        - heading "Configurações" [level=1] [ref=e28]
-        - generic [ref=e29]:
-          - heading "Pasta de destino" [level=2] [ref=e30]
-          - paragraph [ref=e31]: Onde os vídeos vão ser salvos.
-          - generic [ref=e33]:
-            - textbox [ref=e34]: C:\Users\Walla\Videos\TikTok
-            - button "Escolher" [ref=e35] [cursor=pointer]:
-              - img [ref=e36]
-              - text: Escolher
-        - generic [ref=e40]:
-          - heading "Processamento" [level=2] [ref=e41]
-          - generic [ref=e42]:
-            - switch "Remover metadados automaticamente Limpa autor, GPS, encoder do arquivo final. Recomendado." [checked] [ref=e43] [cursor=pointer]:
-              - generic [ref=e46]:
-                - generic [ref=e47]: Remover metadados automaticamente
-                - generic [ref=e48]: Limpa autor, GPS, encoder do arquivo final. Recomendado.
-            - switch "Sempre gerar MP3 junto Cria um .mp3 320kbps a cada download." [ref=e49] [cursor=pointer]:
-              - generic [ref=e52]:
-                - generic [ref=e53]: Sempre gerar MP3 junto
-                - generic [ref=e54]: Cria um .mp3 320kbps a cada download.
-        - generic [ref=e55]:
-          - heading "Engine de download" [level=2] [ref=e56]
-          - generic [ref=e58]:
-            - generic [ref=e59]:
-              - generic [ref=e60]: Versão local
-              - generic [ref=e61]: desconhecida
-            - button "Verificar atualização" [ref=e62] [cursor=pointer]:
-              - img [ref=e63]
-              - text: Verificar atualização
-        - generic [ref=e68]:
-          - heading "Logs" [level=2] [ref=e69]
-          - switch "Logar URL completa Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar." [ref=e71] [cursor=pointer]:
-            - generic [ref=e74]:
-              - generic [ref=e75]: Logar URL completa
-              - generic [ref=e76]: Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar.
-  - alert [ref=e77]
+        - img [ref=e36]
+    - main [ref=e39]:
+      - generic [ref=e41]:
+        - heading "Configurações" [level=1] [ref=e42]
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - heading "Pasta de destino" [level=2] [ref=e45]
+            - paragraph [ref=e46]: Onde os vídeos vão ser salvos.
+            - generic [ref=e48]:
+              - textbox [ref=e49]: D:\Downloads\Tiktok
+              - button "Escolher" [ref=e50] [cursor=pointer]:
+                - img [ref=e51]
+                - text: Escolher
+          - generic [ref=e55]:
+            - heading "Processamento" [level=2] [ref=e56]
+            - generic [ref=e57]:
+              - switch "Remover metadados automaticamente Limpa autor, GPS, encoder do arquivo final. Recomendado." [checked] [ref=e58] [cursor=pointer]:
+                - generic [ref=e61]:
+                  - generic [ref=e62]: Remover metadados automaticamente
+                  - generic [ref=e63]: Limpa autor, GPS, encoder do arquivo final. Recomendado.
+              - switch "Sempre gerar MP3 junto Cria um .mp3 320kbps a cada download." [ref=e64] [cursor=pointer]:
+                - generic [ref=e67]:
+                  - generic [ref=e68]: Sempre gerar MP3 junto
+                  - generic [ref=e69]: Cria um .mp3 320kbps a cada download.
+          - generic [ref=e70]:
+            - heading "Engine de download" [level=2] [ref=e71]
+            - generic [ref=e73]:
+              - generic [ref=e74]:
+                - generic [ref=e75]: Versão local
+                - generic [ref=e76]: desconhecida
+              - button "Verificar atualização" [ref=e77] [cursor=pointer]:
+                - img [ref=e78]
+                - text: Verificar atualização
+          - generic [ref=e83]:
+            - heading "Logs" [level=2] [ref=e84]
+            - switch "Logar URL completa Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar." [ref=e86] [cursor=pointer]:
+              - generic [ref=e89]:
+                - generic [ref=e90]: Logar URL completa
+                - generic [ref=e91]: Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar.
+  - alert [ref=e92]

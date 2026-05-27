@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
 type Props = {
@@ -27,21 +28,27 @@ export function ToggleRow({
         setChecked(next);
         void onChange(next);
       }}
-      className="flex w-full items-start gap-4 py-3 text-left"
+      className="group flex w-full items-start gap-4 py-3 text-left focus-visible:outline-none"
     >
-      <span
+      <motion.span
+        animate={{
+          backgroundColor: checked
+            ? "hsl(263 70% 58%)"
+            : "hsl(240 5% 14%)",
+        }}
+        transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
         className={cn(
-          "mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
-          checked ? "bg-accent" : "bg-border",
+          "relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full",
+          "group-focus-visible:shadow-focus-ring",
         )}
       >
-        <span
-          className={cn(
-            "h-4 w-4 rounded-full bg-white shadow transition-transform",
-            checked ? "translate-x-[18px]" : "translate-x-0.5",
-          )}
+        <motion.span
+          layout
+          animate={{ x: checked ? 18 : 2 }}
+          transition={{ type: "spring", stiffness: 700, damping: 30 }}
+          className="absolute h-4 w-4 rounded-full bg-white shadow"
         />
-      </span>
+      </motion.span>
       <span className="flex-1">
         <span className="block text-sm font-medium text-text-primary">
           {label}

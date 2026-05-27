@@ -19,7 +19,7 @@ export function UrlListInput({ onSubmit, disabled }: Props) {
         onChange={(e) => setText(e.target.value)}
         disabled={disabled}
         rows={10}
-        className="mt-5 w-full rounded-md border border-border bg-surface p-4 font-mono text-sm text-text-primary placeholder:text-text-subtle outline-none focus:border-accent transition-colors resize-y min-h-[200px]"
+        className="mt-5 w-full rounded-md border border-border bg-surface p-4 font-mono text-sm text-text-primary placeholder:text-text-subtle outline-none focus:border-accent focus:shadow-focus-ring transition-all duration-200 ease-out-quad resize-y min-h-[200px]"
         placeholder="https://www.tiktok.com/..."
       />
       <div className="mt-2 flex items-center justify-between">
@@ -30,7 +30,7 @@ export function UrlListInput({ onSubmit, disabled }: Props) {
       <button
         onClick={() => onSubmit(text)}
         disabled={disabled || count === 0}
-        className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press px-6 text-sm font-medium text-white hover:brightness-110 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press px-6 text-sm font-medium text-white hover:brightness-110 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:brightness-95 transition duration-150 ease-out-quad disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none focus-visible:outline-none focus-visible:shadow-focus-ring"
       >
         Iniciar fila
       </button>

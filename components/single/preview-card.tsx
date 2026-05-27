@@ -52,7 +52,7 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
       </div>
       <button
         onClick={onDownload}
-        className="mt-5 w-full inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press text-sm font-medium text-white hover:brightness-110 transition"
+        className="mt-5 w-full inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press text-sm font-medium text-white hover:brightness-110 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:brightness-95 transition duration-150 ease-out-quad focus-visible:outline-none focus-visible:shadow-focus-ring"
       >
         Baixar vídeo
         <Kbd className="bg-white/10 border-white/20 text-white/80">↵</Kbd>

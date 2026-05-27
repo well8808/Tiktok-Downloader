@@ -37,7 +37,7 @@ export function UrlInput({ onProbed, onError }: Props) {
       <p className="mt-1 text-sm text-text-muted font-mono">
         tiktok.com/@autor/video/...
       </p>
-      <div className="mt-5 flex items-center gap-3 rounded-md border border-border bg-surface px-4 h-12 focus-within:border-accent transition-colors">
+      <div className="mt-5 flex items-center gap-3 rounded-md border border-border bg-surface px-4 h-12 focus-within:border-accent focus-within:shadow-focus-ring transition-all duration-200 ease-out-quad">
         {pending ? (
           <Loader2 size={16} className="text-text-muted animate-spin" />
         ) : (

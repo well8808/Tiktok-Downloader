@@ -4,6 +4,7 @@ import { ToggleRow } from "./toggle-row";
 import { FolderPicker } from "./folder-picker";
 import { UpdaterRow } from "./updater-row";
 import { writeSetting } from "@/app/actions/config";
+import { StaggerGroup, StaggerItem } from "@/components/primitives/stagger";
 import type { AppSettings } from "@/lib/config";
 
 type Props = {
@@ -13,8 +14,8 @@ type Props = {
 
 export function SettingsForm({ settings, version }: Props) {
   return (
-    <>
-      <section>
+    <StaggerGroup className="space-y-10">
+      <StaggerItem>
         <h2 className="text-base font-medium text-text-primary">
           Pasta de destino
         </h2>
@@ -24,9 +25,9 @@ export function SettingsForm({ settings, version }: Props) {
         <div className="mt-4">
           <FolderPicker initial={settings.downloadFolder} />
         </div>
-      </section>
+      </StaggerItem>
 
-      <section>
+      <StaggerItem>
         <h2 className="text-base font-medium text-text-primary">
           Processamento
         </h2>
@@ -44,18 +45,18 @@ export function SettingsForm({ settings, version }: Props) {
             onChange={(v) => writeSetting("alwaysExtractMp3", v)}
           />
         </div>
-      </section>
+      </StaggerItem>
 
-      <section>
+      <StaggerItem>
         <h2 className="text-base font-medium text-text-primary">
           Engine de download
         </h2>
         <div className="mt-4">
           <UpdaterRow version={version} />
         </div>
-      </section>
+      </StaggerItem>
 
-      <section>
+      <StaggerItem>
         <h2 className="text-base font-medium text-text-primary">Logs</h2>
         <div className="mt-2">
           <ToggleRow
@@ -65,7 +66,7 @@ export function SettingsForm({ settings, version }: Props) {
             onChange={(v) => writeSetting("logRawUrl", v)}
           />
         </div>
-      </section>
-    </>
+      </StaggerItem>
+    </StaggerGroup>
   );
 }

@@ -32,6 +32,24 @@ const config: Config = {
         xl: ["20px", { lineHeight: "26px" }],
       },
       transitionTimingFunction: { "out-quad": "cubic-bezier(0.25, 0.46, 0.45, 0.94)" },
+      keyframes: {
+        shimmer: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(200%)" },
+        },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "0.4" },
+          "50%": { opacity: "0.7" },
+        },
+      },
+      animation: {
+        shimmer: "shimmer 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite",
+        "pulse-subtle": "pulse-subtle 1.8s ease-in-out infinite",
+      },
+      boxShadow: {
+        "focus-ring": "0 0 0 4px hsl(263 70% 58% / 0.14)",
+        lift: "0 6px 16px -4px hsl(0 0% 0% / 0.5)",
+      },
     },
   },
   plugins: [],

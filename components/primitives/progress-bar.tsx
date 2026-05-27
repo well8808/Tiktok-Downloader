@@ -12,11 +12,13 @@ export function ProgressBar({
   percent,
   variant = "default",
   showTicks = true,
+  shimmer = false,
   className,
 }: {
   percent: number;
   variant?: Variant;
   showTicks?: boolean;
+  shimmer?: boolean;
   className?: string;
 }) {
   const clamped = Math.max(0, Math.min(100, percent));
@@ -33,7 +35,14 @@ export function ProgressBar({
           VARIANTS[variant],
         )}
         style={{ width: `${clamped}%` }}
-      />
+      >
+        {shimmer && (
+          <span
+            aria-hidden
+            className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer"
+          />
+        )}
+      </div>
       {showTicks && (
         <div className="absolute inset-0 flex justify-between pointer-events-none">
           {[25, 50, 75].map((t) => (

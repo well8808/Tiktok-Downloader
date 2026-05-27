@@ -101,7 +101,11 @@ export function JobList({ jobIds }: { jobIds: string[] }) {
               </span>
               {j.status === "DOWNLOADING" && (
                 <div className="w-24">
-                  <ProgressBar percent={j.percent} showTicks={false} />
+                  <ProgressBar
+                    percent={j.percent}
+                    showTicks={false}
+                    shimmer
+                  />
                 </div>
               )}
               {j.status === "COMPLETED" && (

@@ -4,8 +4,11 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TikTok Downloader",
-  description: "Local TikTok video downloader",
+  title: {
+    default: "TikTok Downloader",
+    template: "%s — TikTok Downloader",
+  },
+  description: "Baixador local de vídeos do TikTok em alta qualidade",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

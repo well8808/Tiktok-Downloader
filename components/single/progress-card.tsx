@@ -85,7 +85,12 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
           )}
         </span>
       </div>
-      <ProgressBar percent={percent} variant={variant} className="mt-3" />
+      <ProgressBar
+        percent={percent}
+        variant={variant}
+        shimmer={status === "DOWNLOADING" || status === "PROCESSING"}
+        className="mt-3"
+      />
       {status === "COMPLETED" && (
         <div className="mt-4 flex items-center gap-4 text-sm">
           {filePath && (

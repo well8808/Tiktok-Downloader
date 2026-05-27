@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { listHistory } from "@/app/actions/history";
 import { HistoryEmptyState } from "@/components/history/empty-state";
 import { HistoryItem } from "@/components/history/history-item";
+import { HistorySkeleton } from "@/components/history/skeleton";
 
 type Job = Awaited<ReturnType<typeof listHistory>>[number];
 
@@ -15,8 +16,7 @@ export default function HistoryPage() {
     refresh();
   }, []);
 
-  if (items === null)
-    return <div className="p-6 text-sm text-text-muted">Carregando...</div>;
+  if (items === null) return <HistorySkeleton />;
   if (items.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6">
