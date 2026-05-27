@@ -11,7 +11,7 @@ type SoundPrefs = {
 
 const DEFAULTS: SoundPrefs = {
   soundEnabled: true,
-  soundVolume: 60,
+  soundVolume: 75,
   confettiEnabled: true,
 };
 

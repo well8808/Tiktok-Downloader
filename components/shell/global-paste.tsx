@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { ClipboardPaste, Link as LinkIcon } from "lucide-react";
 import { validateTikTokUrl } from "@/lib/downloader/url-validator";
+import { sound } from "@/lib/sound";
 
 type Toast = {
   id: number;
@@ -24,6 +25,7 @@ export function GlobalPaste() {
     const dispatchUrl = (raw: string) => {
       const trimmed = raw.trim();
       if (!validateTikTokUrl(trimmed)) {
+        sound.playError();
         pushToast({
           id: ++toastCounter,
           message: "Esse link não é do TikTok",
@@ -31,6 +33,7 @@ export function GlobalPaste() {
         });
         return;
       }
+      sound.playPrimary();
       pushToast({
         id: ++toastCounter,
         message: "Capturado · indo pra Single mode",

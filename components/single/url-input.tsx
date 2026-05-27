@@ -5,6 +5,8 @@ import { Link as LinkIcon, Loader2 } from "lucide-react";
 import { Kbd } from "@/components/primitives/kbd";
 import { probeUrl } from "@/app/actions/probe";
 import { sound } from "@/lib/sound";
+import { fireProbeSparkle } from "@/lib/confetti";
+import { usePrefersReducedMotion, useSoundPrefs } from "@/lib/use-sound";
 import type { VideoInfo } from "@/lib/downloader/types";
 
 type Props = {
@@ -16,6 +18,9 @@ export function UrlInput({ onProbed, onError }: Props) {
   const [url, setUrl] = useState("");
   const [pending, startTransition] = useTransition();
   const ref = useRef<HTMLInputElement>(null);
+  const inputBoxRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  const prefs = useSoundPrefs();
 
   const runProbe = useCallback(
     (raw: string) => {
@@ -25,6 +30,19 @@ export function UrlInput({ onProbed, onError }: Props) {
         const result = await probeUrl(trimmed);
         if (result.ok) {
           sound.playProbeSuccess();
+          let originX = 0.5;
+          let originY = 0.48;
+          if (inputBoxRef.current) {
+            const rect = inputBoxRef.current.getBoundingClientRect();
+            originX = (rect.left + rect.width / 2) / window.innerWidth;
+            originY = (rect.top + rect.height / 2) / window.innerHeight;
+          }
+          void fireProbeSparkle({
+            enabled: prefs.confettiEnabled,
+            reducedMotion,
+            originX,
+            originY,
+          });
           onProbed(result.jobId, result.info);
         } else {
           sound.playError();
@@ -32,7 +50,7 @@ export function UrlInput({ onProbed, onError }: Props) {
         }
       });
     },
-    [onProbed, onError],
+    [onProbed, onError, prefs.confettiEnabled, reducedMotion],
   );
 
   useEffect(() => {
@@ -60,7 +78,10 @@ export function UrlInput({ onProbed, onError }: Props) {
       <p className="mt-1 text-sm text-text-muted font-mono">
         tiktok.com/@autor/video/...
       </p>
-      <div className="mt-5 flex items-center gap-3 rounded-md border border-border bg-surface px-4 h-12 focus-within:border-accent focus-within:shadow-focus-ring transition-all duration-200 ease-out-quad">
+      <div
+        ref={inputBoxRef}
+        className="mt-5 flex items-center gap-3 rounded-md border border-border bg-surface px-4 h-12 focus-within:border-accent focus-within:shadow-focus-ring-strong focus-within:bg-surface-hover transition-all duration-200 ease-out-quad"
+      >
         {pending ? (
           <Loader2 size={16} className="text-text-muted animate-spin" />
         ) : (

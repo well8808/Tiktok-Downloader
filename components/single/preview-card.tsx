@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, Video } from "lucide-react";
+import { motion } from "framer-motion";
 import { Kbd } from "@/components/primitives/kbd";
 import { sound } from "@/lib/sound";
 import type { VideoInfo } from "@/lib/downloader/types";
@@ -19,7 +20,17 @@ function formatDuration(sec: number) {
 
 export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
   return (
-    <div className="w-full max-w-2xl rounded-md border border-border bg-surface p-5">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85, y: 12 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 380,
+        damping: 24,
+        mass: 0.6,
+      }}
+      className="w-full max-w-2xl rounded-md border border-border bg-surface p-5 shadow-lift-strong"
+    >
       <div className="flex gap-4">
         {info.thumbnailUrl ? (
           /* eslint-disable-next-line @next/next/no-img-element */
@@ -56,7 +67,7 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
           sound.playPrimary();
           onDownload();
         }}
-        className="mt-5 w-full inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press text-sm font-medium text-white hover:brightness-110 hover:-translate-y-px hover:shadow-lift active:translate-y-0 active:brightness-95 transition duration-150 ease-out-quad focus-visible:outline-none focus-visible:shadow-focus-ring"
+        className="mt-5 w-full inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press text-sm font-medium text-white hover:brightness-110 hover:-translate-y-[3px] hover:shadow-lift-strong active:translate-y-0 active:scale-[0.97] active:brightness-95 transition duration-150 ease-out-quad focus-visible:outline-none focus-visible:shadow-focus-ring-strong"
       >
         Baixar vídeo
         <Kbd className="bg-white/10 border-white/20 text-white/80">↵</Kbd>
@@ -70,6 +81,6 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
       >
         ou só o áudio (MP3)
       </button>
-    </div>
+    </motion.div>
   );
 }

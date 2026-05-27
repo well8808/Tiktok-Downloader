@@ -48,7 +48,13 @@ const config: Config = {
       },
       boxShadow: {
         "focus-ring": "0 0 0 4px hsl(263 70% 58% / 0.14)",
+        "focus-ring-strong":
+          "0 0 0 4px hsl(263 70% 58% / 0.22), 0 0 32px -4px hsl(263 70% 58% / 0.45)",
         lift: "0 6px 16px -4px hsl(0 0% 0% / 0.5)",
+        "lift-strong":
+          "0 10px 28px -6px hsl(0 0% 0% / 0.7), 0 0 40px -8px hsl(263 70% 58% / 0.35)",
+        "lift-success":
+          "0 10px 28px -6px hsl(0 0% 0% / 0.7), 0 0 40px -8px hsl(150 60% 50% / 0.45)",
       },
     },
   },
