@@ -2,6 +2,7 @@ import { Sidebar } from "@/components/shell/sidebar";
 import { AutoResumeToast } from "@/components/shell/auto-resume-toast";
 import { PageTransition } from "@/components/shell/page-transition";
 import { KeyboardNav } from "@/components/shell/keyboard-nav";
+import { GlobalPaste } from "@/components/shell/global-paste";
 
 export default function MainLayout({
   children,
@@ -16,6 +17,7 @@ export default function MainLayout({
       </main>
       <AutoResumeToast />
       <KeyboardNav />
+      <GlobalPaste />
     </div>
   );
 }

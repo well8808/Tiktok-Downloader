@@ -2,7 +2,10 @@
 
 import { FolderOpen, RotateCcw, Trash2 } from "lucide-react";
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { deleteJob } from "@/app/actions/history";
+import { redownloadJob } from "@/app/actions/redownload";
+import { Tooltip } from "@/components/primitives/tooltip";
 
 type Item = {
   id: string;
@@ -39,7 +42,17 @@ export function HistoryItem({
   item: Item;
   onDelete: () => void;
 }) {
-  const [, startTransition] = useTransition();
+  const router = useRouter();
+  const [redoPending, startRedo] = useTransition();
+  const [deletePending, startDelete] = useTransition();
+
+  const handleRedownload = () => {
+    startRedo(async () => {
+      const res = await redownloadJob(item.id);
+      if (res.ok) router.push(`/?job=${res.jobId}`);
+    });
+  };
+
   return (
     <li className="flex items-center gap-4 py-4 border-b border-border last:border-0">
       {item.thumbnailUrl ? (
@@ -68,37 +81,48 @@ export function HistoryItem({
       </div>
       <div className="flex items-center gap-1">
         {item.filePath && (
+          <Tooltip label="Abrir pasta" side="top">
+            <button
+              onClick={() =>
+                fetch(
+                  `/api/open?path=${encodeURIComponent(item.filePath as string)}`,
+                  { method: "POST" },
+                )
+              }
+              aria-label="Abrir pasta"
+              className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-surface transition-colors"
+            >
+              <FolderOpen size={14} />
+            </button>
+          </Tooltip>
+        )}
+        <Tooltip label="Baixar de novo" side="top">
+          <button
+            onClick={handleRedownload}
+            disabled={redoPending}
+            aria-label="Baixar de novo"
+            className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-surface transition-colors disabled:opacity-50"
+          >
+            <RotateCcw
+              size={14}
+              className={redoPending ? "animate-spin" : undefined}
+            />
+          </button>
+        </Tooltip>
+        <Tooltip label="Remover do histórico" side="top">
           <button
             onClick={() =>
-              fetch(
-                `/api/open?path=${encodeURIComponent(item.filePath as string)}`,
-                { method: "POST" },
-              )
+              startDelete(() => {
+                void deleteJob(item.id).then(onDelete);
+              })
             }
-            title="Abrir pasta"
-            className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-text-primary hover:bg-surface transition-colors"
+            disabled={deletePending}
+            aria-label="Remover do histórico"
+            className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-surface transition-colors disabled:opacity-50"
           >
-            <FolderOpen size={14} />
+            <Trash2 size={14} />
           </button>
-        )}
-        <button
-          title="Re-baixar (em breve)"
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-subtle"
-          disabled
-        >
-          <RotateCcw size={14} />
-        </button>
-        <button
-          onClick={() =>
-            startTransition(() => {
-              void deleteJob(item.id).then(onDelete);
-            })
-          }
-          title="Remover do histórico"
-          className="h-8 w-8 inline-flex items-center justify-center rounded-md text-text-muted hover:text-danger hover:bg-surface transition-colors"
-        >
-          <Trash2 size={14} />
-        </button>
+        </Tooltip>
       </div>
     </li>
   );

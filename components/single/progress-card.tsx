@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FolderOpen, RotateCcw } from "lucide-react";
+import { FolderOpen, RotateCcw, X } from "lucide-react";
 import { ProgressBar } from "@/components/primitives/progress-bar";
 import { StatusIcon } from "@/components/primitives/status-icon";
+import { cancelJob } from "@/app/actions/cancel";
 import type { JobStatus, VideoInfo } from "@/lib/downloader/types";
 
 type Props = {
@@ -91,6 +92,28 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
         shimmer={status === "DOWNLOADING" || status === "PROCESSING"}
         className="mt-3"
       />
+      {(status === "DOWNLOADING" ||
+        status === "PROCESSING" ||
+        status === "VALIDATING") && (
+        <div className="mt-4">
+          <button
+            onClick={() => cancelJob(jobId)}
+            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-danger transition-colors"
+          >
+            <X size={14} /> Cancelar
+          </button>
+        </div>
+      )}
+      {status === "CANCELLED" && (
+        <div className="mt-4">
+          <button
+            onClick={onRestart}
+            className="text-sm text-text-muted hover:text-text-primary underline underline-offset-4"
+          >
+            Tentar de novo
+          </button>
+        </div>
+      )}
       {status === "COMPLETED" && (
         <div className="mt-4 flex items-center gap-4 text-sm">
           {filePath && (

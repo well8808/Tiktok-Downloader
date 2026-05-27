@@ -15,10 +15,11 @@ export async function GET(
   const stream = new ReadableStream({
     async start(controller) {
       const send = (data: JobProgress) => {
-        const eventName =
-          data.status === "COMPLETED" || data.status === "FAILED"
-            ? "done"
-            : "progress";
+        const terminal =
+          data.status === "COMPLETED" ||
+          data.status === "FAILED" ||
+          data.status === "CANCELLED";
+        const eventName = terminal ? "done" : "progress";
         controller.enqueue(encoder.encode(`event: ${eventName}\n`));
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };

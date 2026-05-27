@@ -1,6 +1,10 @@
 import { spawn } from "node:child_process";
 import { PATHS } from "../paths";
 import { progressBus } from "../progress-bus";
+import {
+  registerProcess,
+  unregisterProcess,
+} from "../active-processes";
 import { tagError } from "./errors";
 import type { VideoInfo, TaggedError } from "./types";
 
@@ -76,6 +80,7 @@ export async function downloadVideo(
       outputPath,
       url,
     ]);
+    registerProcess(jobId, proc);
     let stderr = "";
     proc.stdout.on("data", (chunk) => {
       const lines = chunk.toString().split(/\r?\n/);
@@ -91,13 +96,22 @@ export async function downloadVideo(
       }
     });
     proc.stderr.on("data", (d) => (stderr += d.toString()));
-    proc.on("error", () =>
+    proc.on("error", () => {
+      unregisterProcess(jobId);
       reject({
         code: "network",
         message: "Sem conexão com a internet",
-      } satisfies TaggedError),
-    );
-    proc.on("close", (code) => {
+      } satisfies TaggedError);
+    });
+    proc.on("close", (code, signal) => {
+      unregisterProcess(jobId);
+      if (signal === "SIGTERM") {
+        reject({
+          code: "ytdlp_failed",
+          message: "Download cancelado",
+        } satisfies TaggedError);
+        return;
+      }
       if (code === 0) resolve();
       else reject(tagError(stderr, code));
     });

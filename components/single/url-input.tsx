@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect } from "react";
+import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { Link as LinkIcon, Loader2 } from "lucide-react";
 import { Kbd } from "@/components/primitives/kbd";
 import { probeUrl } from "@/app/actions/probe";
@@ -16,18 +16,35 @@ export function UrlInput({ onProbed, onError }: Props) {
   const [pending, startTransition] = useTransition();
   const ref = useRef<HTMLInputElement>(null);
 
+  const runProbe = useCallback(
+    (raw: string) => {
+      const trimmed = raw.trim();
+      if (!trimmed) return;
+      startTransition(async () => {
+        const result = await probeUrl(trimmed);
+        if (result.ok) onProbed(result.jobId, result.info);
+        else onError(result.message);
+      });
+    },
+    [onProbed, onError],
+  );
+
   useEffect(() => {
     ref.current?.focus();
   }, []);
 
-  const submit = () => {
-    if (!url.trim()) return;
-    startTransition(async () => {
-      const result = await probeUrl(url.trim());
-      if (result.ok) onProbed(result.jobId, result.info);
-      else onError(result.message);
-    });
-  };
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (!detail) return;
+      setUrl(detail);
+      runProbe(detail);
+    };
+    window.addEventListener("ttdl:paste-url", handler);
+    return () => window.removeEventListener("ttdl:paste-url", handler);
+  }, [runProbe]);
+
+  const submit = () => runProbe(url);
 
   return (
     <div className="w-full max-w-2xl">

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { UrlInput } from "@/components/single/url-input";
 import { PreviewCard } from "@/components/single/preview-card";
 import { ProgressCard } from "@/components/single/progress-card";
 import { startDownload } from "@/app/actions/download";
+import { getJob } from "@/app/actions/history";
 import type { VideoInfo } from "@/lib/downloader/types";
 
 type Stage =
@@ -19,8 +21,31 @@ const stageTransition = {
   ease: [0.25, 0.46, 0.45, 0.94] as const,
 };
 
-export default function SinglePage() {
+function SinglePageInner() {
   const [stage, setStage] = useState<Stage>({ kind: "input" });
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const queuedJobId = searchParams.get("job");
+
+  useEffect(() => {
+    if (!queuedJobId) return;
+    void (async () => {
+      const job = await getJob(queuedJobId);
+      if (!job) return;
+      const info: VideoInfo = {
+        id: job.id,
+        url: job.url,
+        authorHandle: job.authorHandle ?? "@tiktok",
+        title: job.title ?? "",
+        durationSec: job.durationSec ?? 0,
+        thumbnailUrl: job.thumbnailUrl ?? "",
+        formats: [],
+      };
+      setStage({ kind: "progress", jobId: queuedJobId, info });
+      router.replace("/", { scroll: false });
+    })();
+  }, [queuedJobId, router]);
+
   const reset = () => setStage({ kind: "input" });
 
   return (
@@ -111,5 +136,13 @@ export default function SinglePage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function SinglePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <SinglePageInner />
+    </Suspense>
   );
 }

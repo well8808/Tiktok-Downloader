@@ -18,6 +18,10 @@ export async function deleteJob(jobId: string) {
   return { ok: true };
 }
 
+export async function getJob(jobId: string) {
+  return db.job.findUnique({ where: { id: jobId } });
+}
+
 export async function getActiveJobs() {
   return db.job.findMany({
     where: {
