@@ -24,7 +24,6 @@ import { switchOnSound } from "./sounds/switch-on";
 import { switchOffSound } from "./sounds/switch-off";
 import { errorBuzzSound } from "./sounds/error-buzz";
 import { back001Sound } from "./sounds/back-001";
-import { beginSound } from "./sounds/begin";
 
 class SoundEngine {
   private volume = 0.75;
@@ -66,9 +65,6 @@ class SoundEngine {
   }
   playProbeSuccess() {
     void this.play(notificationPopSound, 0.9);
-  }
-  playStarted() {
-    void this.play(beginSound, 0.7);
   }
   playComplete() {
     void this.play(successChimeSound, 1.1);

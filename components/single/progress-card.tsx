@@ -50,17 +50,12 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
   const [percent, setPercent] = useState(0);
   const [message, setMessage] = useState<string | undefined>();
   const [filePath, setFilePath] = useState<string | undefined>();
-  const startedSoundRef = useRef(false);
   const terminalSoundRef = useRef(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const prefs = useSoundPrefs();
 
   useEffect(() => {
-    if (!startedSoundRef.current) {
-      startedSoundRef.current = true;
-      sound.playStarted();
-    }
     const es = new EventSource(`/api/progress/${jobId}`);
     es.addEventListener("progress", (e: MessageEvent) => {
       const data = JSON.parse(e.data);
