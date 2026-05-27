@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { parseUrlList } from "@/lib/downloader/url-validator";
 import { sound } from "@/lib/sound";
+import { ShimmerButton } from "@/components/primitives/shimmer-button";
 
 type Props = { onSubmit: (text: string) => void; disabled?: boolean };
 
@@ -28,16 +29,16 @@ export function UrlListInput({ onSubmit, disabled }: Props) {
           {count} URLs detectadas
         </span>
       </div>
-      <button
+      <ShimmerButton
         onClick={() => {
           sound.playPrimary();
           onSubmit(text);
         }}
         disabled={disabled || count === 0}
-        className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press px-6 text-sm font-medium text-white hover:brightness-110 hover:-translate-y-[3px] hover:shadow-lift-strong active:translate-y-0 active:scale-[0.97] active:brightness-95 transition duration-150 ease-out-quad disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none focus-visible:outline-none focus-visible:shadow-focus-ring-strong"
+        className="mt-4 h-11 px-6"
       >
         Iniciar fila
-      </button>
+      </ShimmerButton>
     </div>
   );
 }

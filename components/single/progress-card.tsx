@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FolderOpen, RotateCcw, X, Check } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 import { ProgressBar } from "@/components/primitives/progress-bar";
-import { StatusIcon } from "@/components/primitives/status-icon";
+import { GlareCard } from "@/components/primitives/glare-card";
+import { Sparkles } from "@/components/primitives/sparkles";
+import { MultiStepLoader } from "@/components/primitives/multi-step-loader";
 import { cancelJob } from "@/app/actions/cancel";
 import { sound } from "@/lib/sound";
 import { fireCompletionConfetti } from "@/lib/confetti";
@@ -21,15 +24,26 @@ type Props = {
   onRestart: () => void;
 };
 
-const STATUS_LABEL: Record<JobStatus, string> = {
-  PENDING: "Na fila",
-  VALIDATING: "Validando",
-  DOWNLOADING: "Baixando",
-  PROCESSING: "Processando",
-  COMPLETED: "Pronto",
-  FAILED: "Falhou",
-  CANCELLED: "Cancelado",
-};
+const STEPS = [
+  { label: "Validando link" },
+  { label: "Baixando vídeo" },
+  { label: "Removendo metadados" },
+  { label: "Conferindo arquivo" },
+  { label: "Pronto" },
+];
+
+function statusToStepIndex(status: JobStatus, percent: number): number {
+  if (status === "VALIDATING") return 0;
+  if (status === "DOWNLOADING") return 1;
+  if (status === "PROCESSING") {
+    // PROCESSING tem 2 sub-fases (strip + validate). Quando termina o
+    // strip e parte pro validate, percent é 100 (downloaded), e ainda
+    // estamos validando. Aproximação: PROCESSING quase sempre = step 2.
+    return percent >= 100 ? 3 : 2;
+  }
+  if (status === "COMPLETED") return STEPS.length;
+  return 0;
+}
 
 export function ProgressCard({ jobId, info, onRestart }: Props) {
   const [status, setStatus] = useState<JobStatus>("DOWNLOADING");
@@ -65,7 +79,7 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
         terminalSoundRef.current = true;
         if (data.status === "COMPLETED") {
           let originX = 0.5;
-          let originY = 0.42;
+          let originY = 0.5;
           if (cardRef.current) {
             const rect = cardRef.current.getBoundingClientRect();
             originX = (rect.left + rect.width / 2) / window.innerWidth;
@@ -98,8 +112,13 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
       : status === "FAILED"
         ? "danger"
         : "default";
-  const displayMessage = message ?? STATUS_LABEL[status];
   const isCompleted = status === "COMPLETED";
+  const isFailed = status === "FAILED";
+  const isCancelled = status === "CANCELLED";
+  const stepIndex = useMemo(
+    () => statusToStepIndex(status, percent),
+    [status, percent],
+  );
 
   return (
     <motion.div
@@ -107,10 +126,10 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
       animate={
         isCompleted
           ? {
-              scale: [1, 1.035, 1],
+              scale: [1, 1.04, 1],
               boxShadow: [
                 "0 0 0 0 hsl(150 60% 50% / 0)",
-                "0 0 0 8px hsl(150 60% 50% / 0.18), 0 16px 40px -10px hsl(150 60% 50% / 0.4)",
+                "0 0 0 10px hsl(150 60% 50% / 0.22), 0 22px 50px -10px hsl(150 60% 50% / 0.5)",
                 "0 0 0 0 hsl(150 60% 50% / 0)",
               ],
             }
@@ -118,167 +137,203 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
       }
       transition={
         isCompleted
-          ? { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }
+          ? { duration: 1.4, ease: [0.25, 0.46, 0.45, 0.94] }
           : { duration: 0.2 }
       }
-      className={cn(
-        "relative w-full max-w-2xl rounded-md border bg-surface p-5 transition-colors duration-300",
-        isCompleted
-          ? "border-success/40"
-          : status === "FAILED"
-            ? "border-danger/30"
-            : "border-border",
-      )}
+      className="w-full max-w-2xl"
     >
-      {/* Ring de partículas decorativo no completion */}
-      <AnimatePresence>
+      <GlareCard
+        className={cn(
+          "rounded-md border bg-surface p-5 transition-colors duration-300",
+          isCompleted
+            ? "border-success/45"
+            : isFailed
+              ? "border-danger/40"
+              : "border-border",
+        )}
+        glareColor={isCompleted ? "150 60% 55%" : "263 70% 60%"}
+      >
+        {/* Sparkles overlay no completion */}
         {isCompleted && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{ opacity: [0, 1, 0], scale: [0.6, 1.6, 2.2] }}
-            transition={{ duration: 1.4, ease: "easeOut" }}
-            className="pointer-events-none absolute left-5 top-5 h-10 w-10 rounded-full border-2 border-success/40"
-            aria-hidden
-          />
+          <Sparkles count={14} color="hsl(150 60% 60%)" size={3} />
         )}
-      </AnimatePresence>
 
-      <div className="flex gap-4">
-        {info.thumbnailUrl && (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={info.thumbnailUrl}
-            alt=""
-            className={cn(
-              "h-[54px] w-[96px] rounded-sm object-cover border transition-all duration-300",
-              isCompleted
-                ? "border-success/40 shadow-[0_0_18px_-2px_hsl(150_60%_50%/0.45)]"
-                : "border-border",
-            )}
-          />
-        )}
-        <div className="min-w-0 flex-1">
-          <p className="font-mono text-sm text-text-primary truncate">
-            {info.authorHandle}
-          </p>
-          <p className="mt-1 text-sm text-text-muted line-clamp-2">
-            {info.title}
-          </p>
+        <div className="flex gap-4">
+          {info.thumbnailUrl && (
+            <motion.div
+              animate={
+                isCompleted
+                  ? { scale: [1, 1.08, 1] }
+                  : { scale: 1 }
+              }
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="relative"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={info.thumbnailUrl}
+                alt=""
+                className={cn(
+                  "h-[54px] w-[96px] rounded-sm object-cover border transition-all duration-300",
+                  isCompleted
+                    ? "border-success/45 shadow-[0_0_22px_-2px_hsl(150_60%_50%/0.55)]"
+                    : "border-border",
+                )}
+              />
+            </motion.div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="font-mono text-sm text-text-primary truncate">
+              {info.authorHandle}
+            </p>
+            <p className="mt-1 text-sm text-text-muted line-clamp-2">
+              {info.title}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="mt-5 flex items-center gap-2 text-sm">
-        <AnimatePresence mode="wait">
-          {isCompleted ? (
-            <motion.span
-              key="check"
-              initial={{ scale: 0.4, rotate: -90, opacity: 0 }}
-              animate={{ scale: 1, rotate: 0, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 380, damping: 16 }}
-              className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-success/15 text-success"
+        {/* Multi step loader visível durante o processo */}
+        {!isCompleted && !isFailed && !isCancelled && (
+          <div className="mt-5">
+            <MultiStepLoader
+              steps={STEPS}
+              currentIndex={stepIndex}
+              done={false}
+            />
+          </div>
+        )}
+
+        {/* Counter + progress bar */}
+        {(status === "DOWNLOADING" || status === "PROCESSING") && (
+          <div className="mt-4 flex items-center justify-between font-mono text-sm">
+            <span className="text-text-muted">
+              {status === "DOWNLOADING" ? "Baixando" : "Processando"}
+            </span>
+            <NumberFlow
+              value={Math.floor(percent)}
+              suffix="%"
+              className="text-text-primary tabular-nums"
+              transformTiming={{
+                duration: 360,
+                easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              }}
+            />
+          </div>
+        )}
+
+        <ProgressBar
+          percent={percent}
+          variant={variant}
+          shimmer={status === "DOWNLOADING" || status === "PROCESSING"}
+          className="mt-3"
+        />
+
+        {/* Completion big check + label */}
+        <AnimatePresence>
+          {isCompleted && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15, duration: 0.3 }}
+              className="mt-5 flex items-center gap-3"
             >
-              <Check size={14} strokeWidth={3} />
-            </motion.span>
-          ) : (
-            <motion.span
-              key="status"
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.6, opacity: 0 }}
-              transition={{ duration: 0.18 }}
-            >
-              <StatusIcon status={status} size={16} />
-            </motion.span>
+              <motion.span
+                initial={{ scale: 0.3, rotate: -90, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 360,
+                  damping: 16,
+                  delay: 0.1,
+                }}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-success/15 text-success"
+              >
+                <Check size={20} strokeWidth={3} />
+              </motion.span>
+              <div>
+                <p className="text-base font-medium text-text-primary">
+                  Pronto
+                </p>
+                <p className="font-mono text-xs text-text-subtle">
+                  Arquivo limpo e salvo
+                </p>
+              </div>
+            </motion.div>
           )}
         </AnimatePresence>
-        <span className="font-mono text-text-primary">
-          {displayMessage}
-          {status === "DOWNLOADING" && (
-            <motion.span
-              key={Math.floor(percent / 10)}
-              initial={{ opacity: 0, y: -2 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.12 }}
-              className="ml-2 text-text-muted"
-            >
-              {percent.toFixed(0)}%
-            </motion.span>
-          )}
-        </span>
-      </div>
 
-      <ProgressBar
-        percent={percent}
-        variant={variant}
-        shimmer={status === "DOWNLOADING" || status === "PROCESSING"}
-        className="mt-3"
-      />
-
-      {(status === "DOWNLOADING" ||
-        status === "PROCESSING" ||
-        status === "VALIDATING") && (
-        <div className="mt-4">
-          <button
-            onClick={() => {
-              sound.playCancel();
-              void cancelJob(jobId);
-            }}
-            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-danger transition-colors"
-          >
-            <X size={14} /> Cancelar
-          </button>
-        </div>
-      )}
-
-      {status === "CANCELLED" && (
-        <div className="mt-4">
-          <button
-            onClick={onRestart}
-            className="text-sm text-text-muted hover:text-text-primary underline underline-offset-4"
-          >
-            Tentar de novo
-          </button>
-        </div>
-      )}
-
-      {isCompleted && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-          className="mt-4 flex items-center gap-4 text-sm"
-        >
-          {filePath && (
+        {(status === "DOWNLOADING" ||
+          status === "PROCESSING" ||
+          status === "VALIDATING") && (
+          <div className="mt-5">
             <button
-              onClick={() =>
-                fetch(`/api/open?path=${encodeURIComponent(filePath)}`, {
-                  method: "POST",
-                })
-              }
+              onClick={() => {
+                sound.playCancel();
+                void cancelJob(jobId);
+              }}
+              className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-danger transition-colors"
+            >
+              <X size={14} /> Cancelar
+            </button>
+          </div>
+        )}
+
+        {isCancelled && (
+          <div className="mt-5 space-y-2">
+            <p className="text-sm text-text-muted">
+              {message ?? "Download cancelado"}
+            </p>
+            <button
+              onClick={onRestart}
+              className="text-sm text-text-muted hover:text-text-primary underline underline-offset-4"
+            >
+              Tentar de novo
+            </button>
+          </div>
+        )}
+
+        {isCompleted && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.3 }}
+            className="mt-5 flex items-center gap-4 text-sm"
+          >
+            {filePath && (
+              <button
+                onClick={() =>
+                  fetch(`/api/open?path=${encodeURIComponent(filePath)}`, {
+                    method: "POST",
+                  })
+                }
+                className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-primary transition-colors"
+              >
+                <FolderOpen size={14} /> Abrir pasta
+              </button>
+            )}
+            <button
+              onClick={onRestart}
               className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-primary transition-colors"
             >
-              <FolderOpen size={14} /> Abrir pasta
+              <RotateCcw size={14} /> Baixar outro
             </button>
-          )}
-          <button
-            onClick={onRestart}
-            className="inline-flex items-center gap-1.5 text-text-muted hover:text-text-primary transition-colors"
-          >
-            <RotateCcw size={14} /> Baixar outro
-          </button>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
-      {status === "FAILED" && (
-        <div className="mt-4 flex items-center gap-4">
-          <button
-            onClick={onRestart}
-            className="text-sm text-text-muted hover:text-text-primary underline underline-offset-4"
-          >
-            Tentar de novo
-          </button>
-        </div>
-      )}
+        {isFailed && (
+          <div className="mt-5 space-y-2">
+            <p className="text-sm text-danger">
+              {message ?? "Algo deu errado"}
+            </p>
+            <button
+              onClick={onRestart}
+              className="text-sm text-text-muted hover:text-text-primary underline underline-offset-4"
+            >
+              Tentar de novo
+            </button>
+          </div>
+        )}
+      </GlareCard>
     </motion.div>
   );
 }

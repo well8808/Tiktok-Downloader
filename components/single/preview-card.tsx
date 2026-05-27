@@ -3,6 +3,8 @@
 import { Clock, Video } from "lucide-react";
 import { motion } from "framer-motion";
 import { Kbd } from "@/components/primitives/kbd";
+import { ShimmerButton } from "@/components/primitives/shimmer-button";
+import { GlareCard } from "@/components/primitives/glare-card";
 import { sound } from "@/lib/sound";
 import type { VideoInfo } from "@/lib/downloader/types";
 
@@ -29,7 +31,11 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
         damping: 24,
         mass: 0.6,
       }}
-      className="w-full max-w-2xl rounded-md border border-border bg-surface p-5 shadow-lift-strong"
+      className="w-full max-w-2xl"
+    >
+    <GlareCard
+      className="rounded-md border border-border bg-surface p-5 shadow-lift-strong"
+      glareColor="263 70% 60%"
     >
       <div className="flex gap-4">
         {info.thumbnailUrl ? (
@@ -62,16 +68,16 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
           </div>
         </div>
       </div>
-      <button
+      <ShimmerButton
         onClick={() => {
           sound.playPrimary();
           onDownload();
         }}
-        className="mt-5 w-full inline-flex h-11 items-center justify-center gap-2 rounded-md bg-accent border-b-2 border-accent-press text-sm font-medium text-white hover:brightness-110 hover:-translate-y-[3px] hover:shadow-lift-strong active:translate-y-0 active:scale-[0.97] active:brightness-95 transition duration-150 ease-out-quad focus-visible:outline-none focus-visible:shadow-focus-ring-strong"
+        className="mt-5 w-full h-11"
       >
         Baixar vídeo
         <Kbd className="bg-white/10 border-white/20 text-white/80">↵</Kbd>
-      </button>
+      </ShimmerButton>
       <button
         onClick={() => {
           sound.playPrimary();
@@ -81,6 +87,7 @@ export function PreviewCard({ info, onDownload, onAudioOnly }: Props) {
       >
         ou só o áudio (MP3)
       </button>
+    </GlareCard>
     </motion.div>
   );
 }

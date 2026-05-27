@@ -37,14 +37,26 @@ const config: Config = {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(200%)" },
         },
+        "shimmer-travel": {
+          "0%": { transform: "translateX(-100%)" },
+          "60%": { transform: "translateX(220%)" },
+          "100%": { transform: "translateX(220%)" },
+        },
         "pulse-subtle": {
           "0%, 100%": { opacity: "0.4" },
           "50%": { opacity: "0.7" },
         },
+        "spark-float": {
+          "0%, 100%": { opacity: "0", transform: "translateY(0) scale(0.5)" },
+          "50%": { opacity: "1", transform: "translateY(-6px) scale(1)" },
+        },
       },
       animation: {
         shimmer: "shimmer 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite",
+        "shimmer-travel":
+          "shimmer-travel 2.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite",
         "pulse-subtle": "pulse-subtle 1.8s ease-in-out infinite",
+        "spark-float": "spark-float 2.4s ease-in-out infinite",
       },
       boxShadow: {
         "focus-ring": "0 0 0 4px hsl(263 70% 58% / 0.14)",
