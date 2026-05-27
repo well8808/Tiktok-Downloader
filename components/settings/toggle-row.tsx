@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { sound } from "@/lib/sound";
 
 type Props = {
   label: string;
@@ -26,6 +27,8 @@ export function ToggleRow({
       onClick={() => {
         const next = !checked;
         setChecked(next);
+        if (next) sound.playToggleOn();
+        else sound.playToggleOff();
         void onChange(next);
       }}
       className="group flex w-full items-start gap-4 py-3 text-left focus-visible:outline-none"

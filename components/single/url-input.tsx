@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { Link as LinkIcon, Loader2 } from "lucide-react";
 import { Kbd } from "@/components/primitives/kbd";
 import { probeUrl } from "@/app/actions/probe";
+import { sound } from "@/lib/sound";
 import type { VideoInfo } from "@/lib/downloader/types";
 
 type Props = {
@@ -22,8 +23,13 @@ export function UrlInput({ onProbed, onError }: Props) {
       if (!trimmed) return;
       startTransition(async () => {
         const result = await probeUrl(trimmed);
-        if (result.ok) onProbed(result.jobId, result.info);
-        else onError(result.message);
+        if (result.ok) {
+          sound.playProbeSuccess();
+          onProbed(result.jobId, result.info);
+        } else {
+          sound.playError();
+          onError(result.message);
+        }
       });
     },
     [onProbed, onError],

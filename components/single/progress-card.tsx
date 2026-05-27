@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FolderOpen, RotateCcw, X } from "lucide-react";
 import { ProgressBar } from "@/components/primitives/progress-bar";
 import { StatusIcon } from "@/components/primitives/status-icon";
 import { cancelJob } from "@/app/actions/cancel";
+import { sound } from "@/lib/sound";
+import { fireCompletionConfetti } from "@/lib/confetti";
+import {
+  usePrefersReducedMotion,
+  useSoundPrefs,
+} from "@/lib/use-sound";
 import type { JobStatus, VideoInfo } from "@/lib/downloader/types";
 
 type Props = {
@@ -28,8 +34,17 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
   const [percent, setPercent] = useState(0);
   const [message, setMessage] = useState<string | undefined>();
   const [filePath, setFilePath] = useState<string | undefined>();
+  const startedRef = useRef(false);
+  const startedSoundRef = useRef(false);
+  const terminalSoundRef = useRef(false);
+  const reducedMotion = usePrefersReducedMotion();
+  const prefs = useSoundPrefs();
 
   useEffect(() => {
+    if (!startedSoundRef.current) {
+      startedSoundRef.current = true;
+      sound.playStarted();
+    }
     const es = new EventSource(`/api/progress/${jobId}`);
     es.addEventListener("progress", (e: MessageEvent) => {
       const data = JSON.parse(e.data);
@@ -43,11 +58,31 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
       setPercent(100);
       setMessage(data.message);
       if (data.filePath) setFilePath(data.filePath);
+
+      if (!terminalSoundRef.current) {
+        terminalSoundRef.current = true;
+        if (data.status === "COMPLETED") {
+          window.setTimeout(() => {
+            void fireCompletionConfetti({
+              enabled: prefs.confettiEnabled,
+              reducedMotion,
+            });
+          }, 80);
+          window.setTimeout(() => sound.playComplete(), 100);
+        } else if (data.status === "FAILED") {
+          sound.playError();
+        } else if (data.status === "CANCELLED") {
+          sound.playCancel();
+        }
+      }
       es.close();
     });
     es.onerror = () => es.close();
     return () => es.close();
-  }, [jobId]);
+  }, [jobId, prefs.confettiEnabled, reducedMotion]);
+
+  // Mark started ref to avoid double-fire on hot reload
+  if (!startedRef.current) startedRef.current = true;
 
   const variant =
     status === "COMPLETED"
@@ -97,7 +132,10 @@ export function ProgressCard({ jobId, info, onRestart }: Props) {
         status === "VALIDATING") && (
         <div className="mt-4">
           <button
-            onClick={() => cancelJob(jobId)}
+            onClick={() => {
+              sound.playCancel();
+              void cancelJob(jobId);
+            }}
             className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-danger transition-colors"
           >
             <X size={14} /> Cancelar

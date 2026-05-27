@@ -1,10 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { ToggleRow } from "./toggle-row";
 import { FolderPicker } from "./folder-picker";
 import { UpdaterRow } from "./updater-row";
+import { VolumeSlider } from "./volume-slider";
 import { writeSetting } from "@/app/actions/config";
 import { StaggerGroup, StaggerItem } from "@/components/primitives/stagger";
+import {
+  useSoundPrefs,
+  setSoundPrefs,
+} from "@/lib/use-sound";
 import type { AppSettings } from "@/lib/config";
 
 type Props = {
@@ -13,6 +19,9 @@ type Props = {
 };
 
 export function SettingsForm({ settings, version }: Props) {
+  const prefs = useSoundPrefs();
+  const [volume, setVolume] = useState(prefs.soundVolume);
+
   return (
     <StaggerGroup className="space-y-10">
       <StaggerItem>
@@ -53,6 +62,39 @@ export function SettingsForm({ settings, version }: Props) {
         </h2>
         <div className="mt-4">
           <UpdaterRow version={version} />
+        </div>
+      </StaggerItem>
+
+      <StaggerItem>
+        <h2 className="text-base font-medium text-text-primary">
+          Sons & efeitos
+        </h2>
+        <p className="mt-1 text-sm text-text-muted">
+          Feedback sutil em probe, download e conclusão.
+        </p>
+        <div className="mt-2 divide-y divide-border">
+          <ToggleRow
+            label="Sons da interface"
+            description="Tons curtos sintéticos em pontos de interação. Família baseada em A4 (440Hz)."
+            defaultChecked={prefs.soundEnabled}
+            onChange={(v) => setSoundPrefs({ soundEnabled: v })}
+          />
+          <VolumeSlider
+            label="Volume"
+            description="Volume relativo dos sons da interface."
+            value={volume}
+            onChange={(v) => {
+              setVolume(v);
+              setSoundPrefs({ soundVolume: v });
+            }}
+            disabled={!prefs.soundEnabled}
+          />
+          <ToggleRow
+            label="Confetti ao concluir"
+            description="Comemoração visual breve quando um download termina."
+            defaultChecked={prefs.confettiEnabled}
+            onChange={(v) => setSoundPrefs({ confettiEnabled: v })}
+          />
         </div>
       </StaggerItem>
 
