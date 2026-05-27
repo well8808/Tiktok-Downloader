@@ -1,0 +1,57 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - list [ref=e4]:
+        - listitem [ref=e5]:
+          - link "Single" [ref=e6] [cursor=pointer]:
+            - /url: /
+            - img [ref=e7]
+        - listitem [ref=e10]:
+          - link "Batch" [ref=e11] [cursor=pointer]:
+            - /url: /batch
+            - img [ref=e12]
+        - listitem [ref=e16]:
+          - link "Histórico" [ref=e17] [cursor=pointer]:
+            - /url: /history
+            - img [ref=e18]
+      - link "Configurações" [ref=e22] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e23]
+    - main [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Configurações" [level=1] [ref=e28]
+        - generic [ref=e29]:
+          - heading "Pasta de destino" [level=2] [ref=e30]
+          - paragraph [ref=e31]: Onde os vídeos vão ser salvos.
+          - generic [ref=e33]:
+            - textbox [ref=e34]: C:\Users\Walla\Videos\TikTok
+            - button "Escolher" [ref=e35] [cursor=pointer]:
+              - img [ref=e36]
+              - text: Escolher
+        - generic [ref=e40]:
+          - heading "Processamento" [level=2] [ref=e41]
+          - generic [ref=e42]:
+            - switch "Remover metadados automaticamente Limpa autor, GPS, encoder do arquivo final. Recomendado." [checked] [ref=e43] [cursor=pointer]:
+              - generic [ref=e46]:
+                - generic [ref=e47]: Remover metadados automaticamente
+                - generic [ref=e48]: Limpa autor, GPS, encoder do arquivo final. Recomendado.
+            - switch "Sempre gerar MP3 junto Cria um .mp3 320kbps a cada download." [ref=e49] [cursor=pointer]:
+              - generic [ref=e52]:
+                - generic [ref=e53]: Sempre gerar MP3 junto
+                - generic [ref=e54]: Cria um .mp3 320kbps a cada download.
+        - generic [ref=e55]:
+          - heading "Engine de download" [level=2] [ref=e56]
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e60]: Versão local
+              - generic [ref=e61]: desconhecida
+            - button "Verificar atualização" [ref=e62] [cursor=pointer]:
+              - img [ref=e63]
+              - text: Verificar atualização
+        - generic [ref=e68]:
+          - heading "Logs" [level=2] [ref=e69]
+          - switch "Logar URL completa Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar." [ref=e71] [cursor=pointer]:
+            - generic [ref=e74]:
+              - generic [ref=e75]: Logar URL completa
+              - generic [ref=e76]: Por padrão, URLs são hasheadas pra privacidade. Ative só pra debugar.
+  - alert [ref=e77]

@@ -1,0 +1,5 @@
+[download] Destination: .tmp/abc.mp4
+[download]   0.0% of 5.21MiB at Unknown speed ETA Unknown
+[download]  23.4% of 5.21MiB at  1.20MiB/s ETA 00:03
+[download]  87.2% of 5.21MiB at  2.10MiB/s ETA 00:00
+[download] 100% of 5.21MiB in 00:02

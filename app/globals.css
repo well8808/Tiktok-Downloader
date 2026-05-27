@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background: hsl(0 0% 0%);
+    color: hsl(0 0% 95%);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  ::selection { background: hsl(263 70% 58% / 0.3); }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .label-track { letter-spacing: 0.04em; text-transform: uppercase; }
+}

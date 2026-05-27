@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Job {
+  id            String    @id
+  url           String
+  authorHandle  String?
+  title         String?
+  durationSec   Int?
+  thumbnailUrl  String?
+  status        String    @default("PENDING")
+  errorCode     String?
+  errorMessage  String?
+  filePath      String?
+  audioPath     String?
+  fileSizeBytes Int?
+  createdAt     DateTime  @default(now())
+  startedAt     DateTime?
+  finishedAt    DateTime?
+  isBatch       Boolean   @default(false)
+  batchId       String?
+  deletedAt     DateTime?
+
+  @@index([status])
+  @@index([batchId])
+  @@index([deletedAt])
+}
+
+model Setting {
+  key   String @id
+  value String
+}

@@ -1,0 +1,28 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - list [ref=e4]:
+        - listitem [ref=e5]:
+          - link "Single" [ref=e6] [cursor=pointer]:
+            - /url: /
+            - img [ref=e8]
+        - listitem [ref=e11]:
+          - link "Batch" [ref=e12] [cursor=pointer]:
+            - /url: /batch
+            - img [ref=e13]
+        - listitem [ref=e17]:
+          - link "Histórico" [ref=e18] [cursor=pointer]:
+            - /url: /history
+            - img [ref=e19]
+      - link "Configurações" [ref=e23] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e24]
+    - main [ref=e27]:
+      - generic [ref=e29]:
+        - heading "Cole um link do TikTok" [level=1] [ref=e30]
+        - paragraph [ref=e31]: tiktok.com/@autor/video/...
+        - generic [ref=e32]:
+          - img [ref=e33]
+          - textbox "https://..." [active] [ref=e36]
+          - generic [ref=e37]: ⌘V
+  - alert [ref=e38]
