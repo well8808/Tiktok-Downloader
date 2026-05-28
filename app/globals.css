@@ -69,6 +69,45 @@
     transform: translateZ(0);
     backface-visibility: hidden;
   }
+
+  /* === Ambient animations (CSS pure, compositor-only, 60fps) === */
+  @keyframes wave-pulse {
+    0%, 100% { transform: scaleY(1); }
+    25% { transform: scaleY(1.35); }
+    50% { transform: scaleY(0.7); }
+    75% { transform: scaleY(1.15); }
+  }
+  @keyframes wave-pulse-active {
+    0%, 100% { transform: scaleY(1); }
+    25% { transform: scaleY(1.9); }
+    50% { transform: scaleY(0.5); }
+    75% { transform: scaleY(1.5); }
+  }
+  @keyframes spark-twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .wave-bar {
+    animation: wave-pulse 2.4s ease-in-out infinite;
+    transform-origin: bottom;
+    will-change: transform;
+  }
+  .wave-bar-active {
+    animation: wave-pulse-active 1.2s ease-in-out infinite;
+    transform-origin: bottom;
+    will-change: transform;
+  }
+  .spark-dot {
+    animation: spark-twinkle 2.2s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wave-bar, .wave-bar-active, .spark-dot {
+      animation: none;
+    }
+  }
+
   .skeleton {
     background: linear-gradient(
       90deg,

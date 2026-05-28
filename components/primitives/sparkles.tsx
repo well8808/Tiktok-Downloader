@@ -12,9 +12,7 @@ type Props = {
 
 /**
  * Sparkles — decorativo.
- *
- * 60fps target: CSS animation pura (keyframes spark-twinkle).
- * transform + opacity only. will-change pra GPU promotion.
+ * 60fps target: CSS pure keyframes (spark-twinkle em globals.css).
  */
 export function Sparkles({
   count = 12,
@@ -28,7 +26,6 @@ export function Sparkles({
       left: Math.random() * 100,
       top: Math.random() * 100,
       delay: Math.random() * 2.4,
-      duration: 1.6 + Math.random() * 1.2,
       sizeMul: 0.6 + Math.random() * 0.8,
     }));
   }, [count]);
@@ -45,7 +42,7 @@ export function Sparkles({
       {sparks.map((s) => (
         <span
           key={s.id}
-          className="absolute rounded-full animate-spark-twinkle"
+          className="spark-dot absolute rounded-full"
           style={{
             left: `${s.left}%`,
             top: `${s.top}%`,
@@ -53,9 +50,7 @@ export function Sparkles({
             height: `${size * s.sizeMul}px`,
             background: color,
             boxShadow: `0 0 ${size * 3}px ${color}`,
-            animationDelay: `${s.delay.toFixed(2)}s`,
-            animationDuration: `${s.duration.toFixed(2)}s`,
-            willChange: "transform, opacity",
+            animationDelay: `-${s.delay.toFixed(2)}s`,
           }}
         />
       ))}
