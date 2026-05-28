@@ -64,6 +64,11 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  /* GPU promotion helper — promote para compositor-only updates (60fps) */
+  .gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
   .skeleton {
     background: linear-gradient(
       90deg,

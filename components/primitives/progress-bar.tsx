@@ -40,6 +40,7 @@ export function ProgressBar({
           <span
             aria-hidden
             className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent animate-shimmer"
+            style={{ willChange: "transform" }}
           />
         )}
       </div>

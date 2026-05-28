@@ -56,7 +56,7 @@ export const ShimmerButton = React.forwardRef<HTMLButtonElement, Props>(
                      bg-gradient-to-r from-transparent via-[var(--shimmer-color)] to-transparent
                      opacity-40 mix-blend-overlay
                      animate-[shimmer-travel_2.6s_cubic-bezier(0.25,0.46,0.45,0.94)_infinite]"
-          style={{ width: "60%" }}
+          style={{ width: "60%", willChange: "transform" }}
         />
         {/* Highlight superior sutil */}
         <span

@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UrlInput } from "@/components/single/url-input";
 import { PreviewCard } from "@/components/single/preview-card";
 import { ProgressCard } from "@/components/single/progress-card";
+import { DotGrid } from "@/components/single/dot-grid";
+import { WaveformAmbient } from "@/components/single/waveform-ambient";
 import { startDownload } from "@/app/actions/download";
 import { getJob } from "@/app/actions/history";
 import type { VideoInfo } from "@/lib/downloader/types";
@@ -49,7 +51,24 @@ function SinglePageInner() {
   const reset = () => setStage({ kind: "input" });
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
+      {/* Ambient layer — só aparece no stage "input" */}
+      <AnimatePresence>
+        {stage.kind === "input" && (
+          <motion.div
+            key="ambient"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="pointer-events-none absolute inset-0"
+            aria-hidden
+          >
+            <DotGrid spacing={26} size={1} color="240 5% 26%" fade="center" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AnimatePresence mode="wait" initial={false}>
         {stage.kind === "input" && (
           <motion.div
@@ -58,7 +77,7 @@ function SinglePageInner() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={stageTransition}
-            className="w-full flex justify-center"
+            className="relative w-full flex flex-col items-center"
           >
             <UrlInput
               onProbed={(jobId, info) =>
@@ -66,6 +85,9 @@ function SinglePageInner() {
               }
               onError={(message) => setStage({ kind: "error", message })}
             />
+            <div className="mt-10 w-full max-w-2xl">
+              <WaveformAmbient bars={56} />
+            </div>
           </motion.div>
         )}
         {stage.kind === "preview" && (

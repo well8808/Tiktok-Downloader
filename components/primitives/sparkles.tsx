@@ -1,7 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useMemo } from "react";
+import { cn } from "@/lib/cn";
 
 type Props = {
   count?: number;
@@ -11,8 +11,10 @@ type Props = {
 };
 
 /**
- * Sparkles — decorativo. Pontos brilhantes animados num overlay.
- * Mais leve que tsParticles, ideal pra background sutil em moments.
+ * Sparkles — decorativo.
+ *
+ * 60fps target: CSS animation pura (keyframes spark-twinkle).
+ * transform + opacity only. will-change pra GPU promotion.
  */
 export function Sparkles({
   count = 12,
@@ -34,20 +36,16 @@ export function Sparkles({
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`}
+      className={cn(
+        "pointer-events-none absolute inset-0 overflow-hidden",
+        className,
+      )}
+      style={{ contain: "layout paint" }}
     >
       {sparks.map((s) => (
-        <motion.span
+        <span
           key={s.id}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: [0, 1, 0], scale: [0.5, 1.1, 0.5] }}
-          transition={{
-            duration: s.duration,
-            delay: s.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute rounded-full"
+          className="absolute rounded-full animate-spark-twinkle"
           style={{
             left: `${s.left}%`,
             top: `${s.top}%`,
@@ -55,6 +53,9 @@ export function Sparkles({
             height: `${size * s.sizeMul}px`,
             background: color,
             boxShadow: `0 0 ${size * 3}px ${color}`,
+            animationDelay: `${s.delay.toFixed(2)}s`,
+            animationDuration: `${s.duration.toFixed(2)}s`,
+            willChange: "transform, opacity",
           }}
         />
       ))}
