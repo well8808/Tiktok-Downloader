@@ -5,7 +5,7 @@ import {
   registerProcess,
   unregisterProcess,
 } from "../active-processes";
-import { tagError } from "./errors";
+import { tagError, spawnError } from "./errors";
 import type { VideoInfo, TaggedError } from "./types";
 
 export function parseVideoInfo(json: string, originalUrl: string): VideoInfo {
@@ -40,11 +40,8 @@ export async function probe(url: string): Promise<VideoInfo> {
     let stderr = "";
     proc.stdout.on("data", (d) => (stdout += d.toString()));
     proc.stderr.on("data", (d) => (stderr += d.toString()));
-    proc.on("error", () =>
-      reject({
-        code: "network",
-        message: "Sem conexão com a internet",
-      } satisfies TaggedError),
+    proc.on("error", (err) =>
+      reject(spawnError(err as NodeJS.ErrnoException, "yt-dlp.exe")),
     );
     proc.on("close", (code) => {
       if (code === 0 && stdout.trim()) {
@@ -96,12 +93,9 @@ export async function downloadVideo(
       }
     });
     proc.stderr.on("data", (d) => (stderr += d.toString()));
-    proc.on("error", () => {
+    proc.on("error", (err) => {
       unregisterProcess(jobId);
-      reject({
-        code: "network",
-        message: "Sem conexão com a internet",
-      } satisfies TaggedError);
+      reject(spawnError(err as NodeJS.ErrnoException, "yt-dlp.exe"));
     });
     proc.on("close", (code, signal) => {
       unregisterProcess(jobId);

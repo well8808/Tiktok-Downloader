@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
+import { basename } from "node:path";
 import { PATHS } from "../paths";
-import { ffmpegError } from "./errors";
+import { ffmpegError, spawnError } from "./errors";
 import type { TaggedError } from "./types";
 
 function run(
@@ -13,12 +14,8 @@ function run(
     let stderr = "";
     proc.stdout.on("data", (d) => (stdout += d.toString()));
     proc.stderr.on("data", (d) => (stderr += d.toString()));
-    proc.on("error", () =>
-      reject({
-        code: "ffmpeg_failed",
-        message: "ffmpeg não encontrado",
-        detail: "",
-      } satisfies TaggedError),
+    proc.on("error", (err) =>
+      reject(spawnError(err as NodeJS.ErrnoException, basename(exe))),
     );
     proc.on("close", (code) => {
       if (code === 0) resolve({ stdout, stderr });

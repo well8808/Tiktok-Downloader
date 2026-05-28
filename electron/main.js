@@ -121,6 +121,33 @@ function setupRuntimePaths() {
   process.env.DATABASE_URL = `file:${dbFile.replace(/\\/g, "/")}`;
 }
 
+/**
+ * Checa se os binários (yt-dlp/ffmpeg/ffprobe) existem. Se o antivírus
+ * removeu/bloqueou algum, avisa claramente — antes era falha silenciosa
+ * ("sem internet") no momento do download.
+ */
+function warnIfBinariesMissing() {
+  const binDir = process.env.TTDL_BIN_DIR;
+  if (!binDir) return;
+  const required = ["yt-dlp.exe", "ffmpeg.exe", "ffprobe.exe"];
+  const missing = required.filter(
+    (name) => !fs.existsSync(path.join(binDir, name)),
+  );
+  if (missing.length === 0) return;
+  dialog.showMessageBox(mainWindow ?? undefined, {
+    type: "warning",
+    title: "Componentes bloqueados",
+    message: "Alguns componentes do app não foram encontrados.",
+    detail:
+      `Faltando: ${missing.join(", ")}\n\n` +
+      `Pasta: ${binDir}\n\n` +
+      "Isso quase sempre é o antivírus (Windows Defender) bloqueando os " +
+      "executáveis. Adicione a pasta do app às exceções do antivírus e " +
+      "reinstale. Sem esses componentes, o download não funciona.",
+    buttons: ["Entendi"],
+  });
+}
+
 async function startNextServer() {
   const next = require("next");
 
@@ -207,9 +234,10 @@ if (!gotLock) {
 }
 
 // --- Lifecycle ---
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   setupRuntimePaths();
-  createWindow();
+  await createWindow();
+  warnIfBinariesMissing();
   setupAutoUpdate();
 
   app.on("activate", () => {

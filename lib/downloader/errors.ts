@@ -45,3 +45,34 @@ export function ffmpegError(stderr: string): TaggedError {
     detail: stderr.trim().split("\n").slice(-3).join("\n"),
   };
 }
+
+/**
+ * Erro ao tentar SPAWNAR um executável (yt-dlp/ffmpeg). Distingue
+ * ENOENT (binário ausente — tipicamente antivírus deletou/bloqueou)
+ * de falha real de rede. Antes, qualquer erro de spawn virava
+ * "Sem conexão com a internet", o que mascarava o problema real.
+ */
+export function spawnError(
+  err: NodeJS.ErrnoException,
+  exeName: string,
+): TaggedError {
+  if (err.code === "ENOENT") {
+    return {
+      code: "ytdlp_failed",
+      message: `${exeName} não foi encontrado no app. Provável bloqueio do antivírus — adicione a pasta do app às exceções do Windows Defender e reinstale.`,
+      detail: `ENOENT: ${err.path || exeName} não existe ou foi removido`,
+    };
+  }
+  if (err.code === "EACCES" || err.code === "EPERM") {
+    return {
+      code: "ytdlp_failed",
+      message: `Sem permissão pra executar ${exeName}. Provável bloqueio do antivírus.`,
+      detail: `${err.code}: ${err.path || exeName}`,
+    };
+  }
+  return {
+    code: "network",
+    message: "Sem conexão com a internet",
+    detail: err.message,
+  };
+}
