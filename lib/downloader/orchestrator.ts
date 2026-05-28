@@ -1,6 +1,6 @@
 import { join } from "node:path";
-import { mkdirSync, renameSync, unlinkSync, existsSync } from "node:fs";
-import { PATHS, ensureDirs } from "../paths";
+import { mkdirSync, unlinkSync, existsSync } from "node:fs";
+import { PATHS, ensureDirs, moveFile } from "../paths";
 import { db } from "../db";
 import { log } from "../logger";
 import { progressBus } from "../progress-bus";
@@ -57,7 +57,7 @@ export async function runDownloadJob(
         // ignore
       }
     } else {
-      renameSync(tmpRaw, tmpClean);
+      moveFile(tmpRaw, tmpClean);
     }
 
     const validation = await validateMp4(tmpClean);
@@ -78,11 +78,11 @@ export async function runDownloadJob(
     mkdirSync(destDir, { recursive: true });
     const fileName = `${safeAuthor(info.authorHandle)}_${jobId}.mp4`;
     const finalPath = join(destDir, fileName);
-    renameSync(tmpClean, finalPath);
+    moveFile(tmpClean, finalPath);
 
     if (existsSync(tmpAudio)) {
       const finalAudio = join(destDir, fileName.replace(/\.mp4$/, ".mp3"));
-      renameSync(tmpAudio, finalAudio);
+      moveFile(tmpAudio, finalAudio);
       audioPath = finalAudio;
     }
 
@@ -114,6 +114,15 @@ export async function runDownloadJob(
       }
     }
     const tagged = err as TaggedError;
+    // Se o usuário cancelou (cancelJob já marcou CANCELLED + matou o
+    // processo), não sobrescreve com FAILED.
+    const current = await db.job.findUnique({
+      where: { id: jobId },
+      select: { status: true },
+    });
+    if (current?.status === "CANCELLED") {
+      throw tagged;
+    }
     await db.job.update({
       where: { id: jobId },
       data: {

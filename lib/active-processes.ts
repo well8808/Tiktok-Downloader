@@ -1,4 +1,4 @@
-import type { ChildProcess } from "node:child_process";
+import { spawn, type ChildProcess } from "node:child_process";
 
 type Registry = Map<string, ChildProcess>;
 
@@ -24,10 +24,27 @@ export function unregisterProcess(jobId: string) {
 export function killProcess(jobId: string): boolean {
   const proc = activeProcesses.get(jobId);
   if (!proc) return false;
-  try {
-    proc.kill("SIGTERM");
-  } catch {
-    // ignore
+  // No Windows, proc.kill() não mata a árvore — o yt-dlp spawna ffmpeg
+  // como filho, que fica órfão e continua processando. taskkill /T mata
+  // a árvore inteira; /F força.
+  if (process.platform === "win32" && proc.pid) {
+    try {
+      spawn("taskkill", ["/pid", String(proc.pid), "/T", "/F"], {
+        stdio: "ignore",
+      });
+    } catch {
+      try {
+        proc.kill();
+      } catch {
+        // ignore
+      }
+    }
+  } else {
+    try {
+      proc.kill("SIGTERM");
+    } catch {
+      // ignore
+    }
   }
   activeProcesses.delete(jobId);
   return true;
