@@ -1,6 +1,6 @@
 {
   "name": "tiktok-downloader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Baixador local de vídeos do TikTok em alta qualidade",
   "author": "well8808",
@@ -27,6 +27,7 @@
     "@tsparticles/fireworks": "^4.0.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "electron-updater": "^6.8.3",
     "framer-motion": "^12.40.0",
     "geist": "^1.7.1",
     "lucide-react": "^1.16.0",
@@ -60,6 +61,13 @@
     "directories": {
       "output": "dist-electron"
     },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "well8808",
+        "repo": "Tiktok-Downloader"
+      }
+    ],
     "asar": false,
     "files": [
       "electron/**/*",
@@ -91,7 +99,10 @@
       }
     ],
     "win": {
-      "target": ["nsis", "zip"],
+      "target": [
+        "nsis",
+        "zip"
+      ],
       "icon": "public/icon.ico",
       "signAndEditExecutable": false,
       "signtoolOptions": null

@@ -21,6 +21,51 @@ let mainWindow = null;
 let nextServer = null;
 
 /**
+ * Auto-update via electron-updater + GitHub Releases (repo público).
+ * Checa no startup; se houver versão nova, baixa em background e
+ * pergunta ao usuário se quer reiniciar pra instalar. Silencioso em
+ * caso de erro ou sem atualização (não incomoda). Só roda empacotado.
+ */
+function setupAutoUpdate() {
+  if (!app.isPackaged) return;
+  let autoUpdater;
+  try {
+    ({ autoUpdater } = require("electron-updater"));
+  } catch {
+    return;
+  }
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+
+  autoUpdater.on("update-downloaded", async (info) => {
+    if (!mainWindow) return;
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: "info",
+      buttons: ["Reiniciar agora", "Depois"],
+      defaultId: 0,
+      cancelId: 1,
+      title: "Atualização disponível",
+      message: `Versão ${info.version} baixada.`,
+      detail:
+        "Reinicie pra aplicar a atualização. Se escolher 'Depois', será aplicada no próximo fechamento do app.",
+    });
+    if (response === 0) {
+      setImmediate(() => autoUpdater.quitAndInstall());
+    }
+  });
+
+  autoUpdater.on("error", () => {
+    // silencioso — não interromper o uso por falha de update
+  });
+
+  try {
+    autoUpdater.checkForUpdates();
+  } catch {
+    // ignore
+  }
+}
+
+/**
  * Acha uma porta TCP livre via módulo net nativo (porta 0 = OS escolhe).
  * Substitui get-port-please pra não depender de pacote externo no bundle.
  */
@@ -165,6 +210,7 @@ if (!gotLock) {
 app.whenReady().then(() => {
   setupRuntimePaths();
   createWindow();
+  setupAutoUpdate();
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
