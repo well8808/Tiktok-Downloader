@@ -15,9 +15,27 @@ const { app, BrowserWindow, shell, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
+const net = require("net");
 
 let mainWindow = null;
 let nextServer = null;
+
+/**
+ * Acha uma porta TCP livre via módulo net nativo (porta 0 = OS escolhe).
+ * Substitui get-port-please pra não depender de pacote externo no bundle.
+ */
+function findFreePort() {
+  return new Promise((resolve, reject) => {
+    const srv = net.createServer();
+    srv.unref();
+    srv.on("error", reject);
+    srv.listen(0, "127.0.0.1", () => {
+      const addr = srv.address();
+      const port = typeof addr === "object" && addr ? addr.port : 0;
+      srv.close(() => resolve(port));
+    });
+  });
+}
 
 // --- Setup paths para runtime empacotado ---
 function setupRuntimePaths() {
@@ -44,16 +62,9 @@ function setupRuntimePaths() {
 
   // Copia dev.db seed (com schema) se ainda não existe no userData
   if (!fs.existsSync(dbFile)) {
-    const seedCandidates = [
-      path.join(__dirname, "..", "prisma", "dev.db"),
-      path.join(process.resourcesPath, "app", "prisma", "dev.db"),
-      path.join(process.resourcesPath, "prisma", "dev.db"),
-    ];
-    for (const seed of seedCandidates) {
-      if (fs.existsSync(seed)) {
-        fs.copyFileSync(seed, dbFile);
-        break;
-      }
+    const seed = path.join(app.getAppPath(), "prisma", "dev.db");
+    if (fs.existsSync(seed)) {
+      fs.copyFileSync(seed, dbFile);
     }
   }
 
@@ -67,13 +78,12 @@ function setupRuntimePaths() {
 
 async function startNextServer() {
   const next = require("next");
-  const { getPort } = await import("get-port-please");
 
-  const port = await getPort({ port: 3000, portRange: [3000, 3100] });
+  const port = await findFreePort();
 
-  const dir = app.isPackaged
-    ? path.join(process.resourcesPath, "app")
-    : path.join(__dirname, "..");
+  // app.getAppPath() resolve corretamente em dev (projeto root) e
+  // empacotado (resources/app, já que asar=false).
+  const dir = app.getAppPath();
 
   const nextApp = next({ dev: false, dir });
   await nextApp.prepare();
@@ -113,7 +123,7 @@ async function createWindow() {
     title: "TikTok Downloader",
     autoHideMenuBar: true,
     show: false,
-    icon: path.join(__dirname, "..", "public", "icon.ico"),
+    icon: path.join(app.getAppPath(), "public", "icon.ico"),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

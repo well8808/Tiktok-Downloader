@@ -60,15 +60,17 @@
     "directories": {
       "output": "dist-electron"
     },
+    "asar": false,
     "files": [
       "electron/**/*",
-      ".next/standalone/**/*",
-      ".next/static/**/*",
+      ".next/**/*",
+      "!.next/cache/**",
       "public/**/*",
       "lib/**/*",
       "app/**/*",
       "components/**/*",
       "prisma/schema.prisma",
+      "prisma/dev.db",
       "next.config.mjs",
       "package.json"
     ],
@@ -76,35 +78,6 @@
       {
         "from": "bin",
         "to": "bin",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": ".next",
-        "to": "app/.next",
-        "filter": [
-          "**/*",
-          "!cache/**"
-        ]
-      },
-      {
-        "from": "public",
-        "to": "app/public",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": "node_modules/next",
-        "to": "app/node_modules/next",
-        "filter": [
-          "**/*"
-        ]
-      },
-      {
-        "from": "node_modules/@prisma/client",
-        "to": "app/node_modules/@prisma/client",
         "filter": [
           "**/*"
         ]
@@ -129,7 +102,6 @@
       "allowToChangeInstallationDirectory": true,
       "shortcutName": "TikTok Downloader",
       "deleteAppDataOnUninstall": false
-    },
-    "asar": true
+    }
   }
 }
