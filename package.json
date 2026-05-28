@@ -2,6 +2,9 @@
   "name": "tiktok-downloader",
   "version": "0.1.0",
   "private": true,
+  "description": "Baixador local de vídeos do TikTok em alta qualidade",
+  "author": "well8808",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,7 +15,9 @@
     "reliability": "tsx tests/reliability-suite.ts",
     "bootstrap": "powershell -ExecutionPolicy Bypass -File scripts/bootstrap.ps1",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "electron:dev": "npm run build && electron .",
+    "electron:pack": "npm run build && electron-builder --win nsis --publish=never"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.0",
@@ -37,11 +42,94 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@vitest/ui": "^4.1.7",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1",
+    "get-port-please": "^3.2.0",
+    "png-to-ico": "^3.0.1",
     "postcss": "^8",
     "prettier": "^3.8.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.22.3",
     "typescript": "^5",
     "vitest": "^4.1.7"
+  },
+  "build": {
+    "appId": "com.well8808.tiktokdownloader",
+    "productName": "TikTok Downloader",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "electron/**/*",
+      ".next/standalone/**/*",
+      ".next/static/**/*",
+      "public/**/*",
+      "lib/**/*",
+      "app/**/*",
+      "components/**/*",
+      "prisma/schema.prisma",
+      "next.config.mjs",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": ".next",
+        "to": "app/.next",
+        "filter": [
+          "**/*",
+          "!cache/**"
+        ]
+      },
+      {
+        "from": "public",
+        "to": "app/public",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "node_modules/next",
+        "to": "app/node_modules/next",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "node_modules/@prisma/client",
+        "to": "app/node_modules/@prisma/client",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "node_modules/.prisma",
+        "to": "app/node_modules/.prisma",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": ["nsis", "zip"],
+      "icon": "public/icon.ico",
+      "signAndEditExecutable": false,
+      "signtoolOptions": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "TikTok Downloader",
+      "deleteAppDataOnUninstall": false
+    },
+    "asar": true
   }
 }

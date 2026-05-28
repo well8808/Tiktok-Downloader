@@ -42,6 +42,10 @@ tmp/
 # tests runs
 tests/runs/
 
+# electron build output
+dist-electron/
+.icon-tmp/
+
 # os
 .DS_Store
 Thumbs.db

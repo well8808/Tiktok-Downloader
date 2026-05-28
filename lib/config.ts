@@ -10,7 +10,8 @@ export type AppSettings = {
 };
 
 const DEFAULTS: AppSettings = {
-  downloadFolder: join(homedir(), "Videos", "TikTok"),
+  downloadFolder:
+    process.env.TTDL_DOWNLOAD_DIR || join(homedir(), "Videos", "TikTok"),
   autoStripMetadata: true,
   alwaysExtractMp3: false,
   logRawUrl: false,
