@@ -31,6 +31,7 @@ export interface JobProgress {
   status: JobStatus;
   percent: number;
   message?: string;
+  filePath?: string;
 }
 
 export interface TaggedError {

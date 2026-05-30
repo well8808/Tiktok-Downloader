@@ -47,6 +47,7 @@ export async function GET(
           status: current.status as JobProgress["status"],
           percent: current.status === "COMPLETED" ? 100 : 0,
           message: current.errorMessage ?? undefined,
+          filePath: current.filePath ?? undefined,
         });
         if (
           current.status === "COMPLETED" ||

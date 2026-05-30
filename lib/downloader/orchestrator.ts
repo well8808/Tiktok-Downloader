@@ -96,7 +96,12 @@ export async function runDownloadJob(
         finishedAt: new Date(),
       },
     });
-    progressBus.emitProgress({ jobId, status: "COMPLETED", percent: 100 });
+    progressBus.emitProgress({
+      jobId,
+      status: "COMPLETED",
+      percent: 100,
+      filePath: finalPath,
+    });
     log({
       jobId,
       url,

@@ -23,5 +23,6 @@ export class Queue {
 
 const globalForQueue = globalThis as unknown as { downloadQueue?: Queue };
 export const downloadQueue = globalForQueue.downloadQueue ?? new Queue(2);
-if (process.env.NODE_ENV !== "production")
-  globalForQueue.downloadQueue = downloadQueue;
+// SEMPRE cacheia no globalThis (ver nota em progress-bus.ts) — uma única fila
+// real, com a concorrência de fato compartilhada entre bundles.
+globalForQueue.downloadQueue = downloadQueue;

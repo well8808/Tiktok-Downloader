@@ -8,6 +8,7 @@ export const db =
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
-}
+// SEMPRE cacheia no globalThis (ver nota em progress-bus.ts). Como app de
+// processo único (Electron), uma só conexão Prisma evita múltiplos clients
+// apontando pro mesmo SQLite (risco de "database is locked").
+globalForPrisma.prisma = db;

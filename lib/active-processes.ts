@@ -9,9 +9,10 @@ const globalForRegistry = globalThis as unknown as {
 export const activeProcesses: Registry =
   globalForRegistry.activeProcesses ?? new Map();
 
-if (process.env.NODE_ENV !== "production") {
-  globalForRegistry.activeProcesses = activeProcesses;
-}
+// SEMPRE cacheia no globalThis (ver nota em progress-bus.ts). Se o registro
+// for duplicado entre bundles, registerProcess (download) e killProcess
+// (cancelar) usariam Maps diferentes — o cancelar nunca acharia o processo.
+globalForRegistry.activeProcesses = activeProcesses;
 
 export function registerProcess(jobId: string, proc: ChildProcess) {
   activeProcesses.set(jobId, proc);
