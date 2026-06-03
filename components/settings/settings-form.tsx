@@ -38,6 +38,22 @@ export function SettingsForm({ settings, version }: Props) {
 
       <StaggerItem>
         <h2 className="text-base font-medium text-text-primary">
+          Pasta de vídeos limpos
+        </h2>
+        <p className="mt-1 text-sm text-text-muted">
+          Onde caem os vídeos com metadados removidos (aba Limpar).
+        </p>
+        <div className="mt-4">
+          <FolderPicker
+            initial={settings.cleanFolder}
+            settingKey="cleanFolder"
+            promptLabel="Caminho da pasta de vídeos limpos:"
+          />
+        </div>
+      </StaggerItem>
+
+      <StaggerItem>
+        <h2 className="text-base font-medium text-text-primary">
           Processamento
         </h2>
         <div className="mt-2 divide-y divide-border">

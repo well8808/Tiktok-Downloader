@@ -42,6 +42,52 @@ export async function stripMetadata(
   ]);
 }
 
+/**
+ * Limpeza profunda de metadados — pra vídeos gerados por IA (Higgsfield,
+ * Kling, etc). Remuxa sem reencodar (lossless, rápido) e remove tudo:
+ *
+ * - `-map_metadata -1`     → metadados globais do container
+ * - `-map_metadata:s -1`   → metadados de todas as streams (handler_name etc.)
+ * - `-map_chapters -1`     → capítulos
+ * - `+bitexact`            → impede o ffmpeg de carimbar a própria assinatura
+ *                            (encoder/Lavf) no arquivo de saída
+ * - `+faststart`           → moov no início (só efeito em mp4/mov)
+ *
+ * Reconstruir o container do zero também descarta as caixas não-padrão
+ * `uuid`/`jumb` onde ficam as credenciais C2PA / Content Credentials que
+ * os geradores de IA embutem — o ffmpeg não as copia no remux.
+ *
+ * NÃO remove marca d'água invisível em pixels (ex.: SynthID) nem logos
+ * visíveis: isso está na imagem, não nos metadados.
+ */
+export async function stripMetadataDeep(
+  inputPath: string,
+  outputPath: string,
+): Promise<void> {
+  await run(PATHS.ffmpegExe, [
+    "-y",
+    "-i",
+    inputPath,
+    "-map_metadata",
+    "-1",
+    "-map_metadata:s",
+    "-1",
+    "-map_chapters",
+    "-1",
+    "-fflags",
+    "+bitexact",
+    "-flags:v",
+    "+bitexact",
+    "-flags:a",
+    "+bitexact",
+    "-movflags",
+    "+faststart",
+    "-c",
+    "copy",
+    outputPath,
+  ]);
+}
+
 export async function extractMp3(
   inputPath: string,
   outputPath: string,

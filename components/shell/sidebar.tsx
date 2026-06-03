@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Download, Layers, History, Settings, Command } from "lucide-react";
+import { Download, Layers, Eraser, History, Settings, Command } from "lucide-react";
 import { motion, LayoutGroup } from "framer-motion";
 import { Monogram } from "@/components/primitives/monogram";
 import { Tooltip } from "@/components/primitives/tooltip";
@@ -18,6 +18,7 @@ function dispatchHelpToggle() {
 const ITEMS = [
   { href: "/", Icon: Download, label: "Single" },
   { href: "/batch", Icon: Layers, label: "Batch" },
+  { href: "/clean", Icon: Eraser, label: "Limpar" },
   { href: "/history", Icon: History, label: "Histórico" },
 ] as const;
 

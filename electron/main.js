@@ -11,7 +11,7 @@
  * - bin/, .tmp/, logs/, prisma/dev.db: app.getPath('userData')
  */
 
-const { app, BrowserWindow, shell, dialog } = require("electron");
+const { app, BrowserWindow, shell, dialog, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const http = require("http");
@@ -19,6 +19,27 @@ const net = require("net");
 
 let mainWindow = null;
 let nextServer = null;
+
+/**
+ * Seletor nativo de vídeos (multi-seleção) pra aba "Limpar". O renderer
+ * chama via window.desktop.selectVideos() (exposto no preload). Devolve
+ * caminhos absolutos; [] se o usuário cancelar.
+ */
+ipcMain.handle("dialog:selectVideos", async () => {
+  const result = await dialog.showOpenDialog(mainWindow ?? undefined, {
+    title: "Selecionar vídeos pra limpar",
+    properties: ["openFile", "multiSelections"],
+    filters: [
+      {
+        name: "Vídeos",
+        extensions: ["mp4", "mov", "m4v", "webm", "mkv", "avi"],
+      },
+      { name: "Todos os arquivos", extensions: ["*"] },
+    ],
+  });
+  if (result.canceled) return [];
+  return result.filePaths;
+});
 
 /**
  * Auto-update via electron-updater + GitHub Releases (repo público).
@@ -197,6 +218,7 @@ async function createWindow() {
     show: false,
     icon: path.join(app.getAppPath(), "public", "icon.ico"),
     webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,

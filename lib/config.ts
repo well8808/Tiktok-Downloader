@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 export type AppSettings = {
   downloadFolder: string;
+  cleanFolder: string;
   autoStripMetadata: boolean;
   alwaysExtractMp3: boolean;
   logRawUrl: boolean;
@@ -12,6 +13,8 @@ export type AppSettings = {
 const DEFAULTS: AppSettings = {
   downloadFolder:
     process.env.TTDL_DOWNLOAD_DIR || join(homedir(), "Videos", "TikTok"),
+  cleanFolder:
+    process.env.TTDL_CLEAN_DIR || join(homedir(), "Videos", "Limpos"),
   autoStripMetadata: true,
   alwaysExtractMp3: false,
   logRawUrl: false,
@@ -22,6 +25,7 @@ export async function getSettings(): Promise<AppSettings> {
   const map = new Map(rows.map((r) => [r.key, r.value]));
   return {
     downloadFolder: map.get("downloadFolder") ?? DEFAULTS.downloadFolder,
+    cleanFolder: map.get("cleanFolder") ?? DEFAULTS.cleanFolder,
     autoStripMetadata: (map.get("autoStripMetadata") ?? "true") === "true",
     alwaysExtractMp3: (map.get("alwaysExtractMp3") ?? "false") === "true",
     logRawUrl: (map.get("logRawUrl") ?? "false") === "true",

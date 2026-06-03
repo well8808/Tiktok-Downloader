@@ -4,14 +4,24 @@ import { FolderSearch } from "lucide-react";
 import { useState } from "react";
 import { writeSetting } from "@/app/actions/config";
 
-export function FolderPicker({ initial }: { initial: string }) {
+type Props = {
+  initial: string;
+  settingKey?: "downloadFolder" | "cleanFolder";
+  promptLabel?: string;
+};
+
+export function FolderPicker({
+  initial,
+  settingKey = "downloadFolder",
+  promptLabel = "Caminho da pasta de destino:",
+}: Props) {
   const [path, setPath] = useState(initial);
 
   const choose = async () => {
-    const next = window.prompt("Caminho da pasta de destino:", path);
+    const next = window.prompt(promptLabel, path);
     if (next && next.trim()) {
       setPath(next.trim());
-      await writeSetting("downloadFolder", next.trim());
+      await writeSetting(settingKey, next.trim());
     }
   };
 
